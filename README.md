@@ -1,7 +1,14 @@
 
 # Wave Function Collapse
 
-These are the files for my [Wave Function Collapse](https://github.com/mxgmn/WaveFunctionCollapse) application website.  
-Generates an image using a canvas via P5 using up to 15 tiles.  
+[Wave Function Collapse](https://github.com/mxgmn/WaveFunctionCollapse) is a fundamental concept in quantum mechanics that describes the process by which a quantum system transitions from a state of superposition to a definite state upon measurement.  
 
-Written in JS and P5
+The files included are for the website I designed to apply said function and generate an image.  
+These are the core mechanics at play:  
+- Find cells with the lowest entropy and randomly pick one
+- Randomly select and place one of its types  
+- 'Collapse' the cell's neighbors, thus lowering their entropy/different types they can turn into
+- Repeat the cycle until all of the cells are collapsed and placed
+  
+Finally, once completed, an image is generated  
+Each node has up to 15 tiles to pick from and each tile is drawn using P5.js
