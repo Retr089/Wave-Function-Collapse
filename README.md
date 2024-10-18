@@ -12,3 +12,10 @@ These are the core mechanics at play:
   
 Finally, once completed, an image is generated  
 Each node has up to 15 tiles to pick from and each tile is drawn using P5.js
+
+
+# Tasklist
+
+- [ ] Make directory dialog only show when 'Save Frames' is toggled, and untoggle 'Save Frames' if cancelled
+- [ ] Add weighted random selection of pieces
+- [ ] Replace arraylists of data with objects for better descriptors
