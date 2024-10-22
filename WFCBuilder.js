@@ -36,10 +36,6 @@ const PossibleNodes = [
     'turn_3',
     'path_0',
     'path_1',
-    // 'end_0',
-    // 'end_1',
-    // 'end_2',
-    // 'end_3',
     'empty_0'
 ];
 
@@ -47,7 +43,6 @@ const PossibleNodes = [
 // Socket 0 = Empty
 // Socket 1 = Path
 const SocketMap = new Map([
-    // ['intersection_0', 'a'],
     ['fork_0', {
         up: 1,
         down: 0,
@@ -108,32 +103,6 @@ const SocketMap = new Map([
         right: 1,
         left: 1
     }],
-    //Temp
-    ['end_0', {
-        up: 0,
-        down: 1,
-        right: 0,
-        left: 0
-    }],
-    ['end_1', {
-        up: 0,
-        down: 0,
-        right: 0,
-        left: 1
-    }],
-    ['end_2', {
-        up: 1,
-        down: 0,
-        right: 0,
-        left: 0
-    }],
-    ['end_3', {
-        up: 0,
-        down: 0,
-        right: 1,
-        left: 0
-    }],
-    //Temp
     ['empty_0', {
         up: 0,
         down: 0,
@@ -153,10 +122,6 @@ function preload() {
     imageMap.set('turn_3', loadImage('resources/turn_3.png'));
     imageMap.set('path_0', loadImage('resources/path_0.png'));
     imageMap.set('path_1', loadImage('resources/path_1.png'));
-    imageMap.set('end_0', loadImage('resources/end_0.png'));
-    imageMap.set('end_1', loadImage('resources/end_1.png'));
-    imageMap.set('end_2', loadImage('resources/end_2.png'));
-    imageMap.set('end_3', loadImage('resources/end_3.png'));
     imageMap.set('empty_0', loadImage('resources/empty_0.png'));
 }
 function setup() {
@@ -205,6 +170,15 @@ function setup() {
         gen = test.start();
         drawText = true;
         redraw();
+    })
+    saveFramesBox.mousePressed(async () => {
+        if (!saveFramesBox.checked()) {
+            saveFramesBox.checked(false);
+            const res = await api.requestDownloadDirectory();
+            if (res.success) {
+                saveFramesBox.checked(true);
+            }
+        }
     })
     startButton.mousePressed(() => {
         if (saveFramesBox.checked()) {
