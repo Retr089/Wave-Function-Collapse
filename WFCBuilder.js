@@ -8,6 +8,7 @@ let step = 0;
 let drawText = true;
 var startButton;
 var speedSlider;
+var sizeOptionTextfield;
 var saveFramesBox;
 var growingSizeBox;
 var optionsDiv;
@@ -18,10 +19,9 @@ let save = false;
 let scalingSize = false;
 const dimensions = 800;
 
-const maxSize = 20;
+let maxSize = 8;
 const startSize = 3;
-let size = 20;
-// const secondDelay = 1;
+let size = maxSize;
 
 //PossibleNodes
 const PossibleNodes = [
@@ -143,27 +143,27 @@ const SocketMap = new Map([
 ]);
 
 function preload() {
-    imageMap.set('fork_0', loadImage('tiles/fork_0.png'));
-    imageMap.set('fork_1', loadImage('tiles/fork_1.png'));
-    imageMap.set('fork_2', loadImage('tiles/fork_2.png'));
-    imageMap.set('fork_3', loadImage('tiles/fork_3.png'));
-    imageMap.set('turn_0', loadImage('tiles/turn_0.png'));
-    imageMap.set('turn_1', loadImage('tiles/turn_1.png'));
-    imageMap.set('turn_2', loadImage('tiles/turn_2.png'));
-    imageMap.set('turn_3', loadImage('tiles/turn_3.png'));
-    imageMap.set('path_0', loadImage('tiles/path_0.png'));
-    imageMap.set('path_1', loadImage('tiles/path_1.png'));
-    imageMap.set('end_0', loadImage('tiles/end_0.png'));
-    imageMap.set('end_1', loadImage('tiles/end_1.png'));
-    imageMap.set('end_2', loadImage('tiles/end_2.png'));
-    imageMap.set('end_3', loadImage('tiles/end_3.png'));
-    imageMap.set('empty_0', loadImage('tiles/empty_0.png'));
+    imageMap.set('fork_0', loadImage('resources/fork_0.png'));
+    imageMap.set('fork_1', loadImage('resources/fork_1.png'));
+    imageMap.set('fork_2', loadImage('resources/fork_2.png'));
+    imageMap.set('fork_3', loadImage('resources/fork_3.png'));
+    imageMap.set('turn_0', loadImage('resources/turn_0.png'));
+    imageMap.set('turn_1', loadImage('resources/turn_1.png'));
+    imageMap.set('turn_2', loadImage('resources/turn_2.png'));
+    imageMap.set('turn_3', loadImage('resources/turn_3.png'));
+    imageMap.set('path_0', loadImage('resources/path_0.png'));
+    imageMap.set('path_1', loadImage('resources/path_1.png'));
+    imageMap.set('end_0', loadImage('resources/end_0.png'));
+    imageMap.set('end_1', loadImage('resources/end_1.png'));
+    imageMap.set('end_2', loadImage('resources/end_2.png'));
+    imageMap.set('end_3', loadImage('resources/end_3.png'));
+    imageMap.set('empty_0', loadImage('resources/empty_0.png'));
 }
 function setup() {
     test = new WFCBuilder(size, size);
     gen = test.start();
 
-    cnv = createCanvas(dimensions, displayHeight);
+    cnv = createCanvas(dimensions, windowHeight);
     cnv.parent('sketch01');
 
     optionsDiv = createDiv('Options');
@@ -185,18 +185,31 @@ function setup() {
     speedSlider.parent('sketch01');
     speedSlider.position(0, 60)
 
+    sizeOptionTextfield = createInput(size);
     saveFramesBox = createCheckbox('Save Frames', save);
     growingSizeBox = createCheckbox('Growing Size', scalingSize);
 
     startDiv.child(startButton);
     startDiv.child(speedSlider);
+    optionsDiv.child(sizeOptionTextfield);
     optionsDiv.child(saveFramesBox);
     optionsDiv.child(growingSizeBox);
 
+    sizeOptionTextfield.changed(() => {
+        clearInterval(intervalId);
+        clearTimeout(timeoutId);
+        step = 0;
+        maxSize = sizeOptionTextfield.value();
+        size = maxSize;
+        test = new WFCBuilder(size, size);
+        gen = test.start();
+        drawText = true;
+        redraw();
+    })
     startButton.mousePressed(() => {
         if (saveFramesBox.checked()) {
             save = true;
-            speedSlider.value(0.81);
+            speedSlider.value(1.01);
         } else {
             save = false;
         }
@@ -253,13 +266,19 @@ function swapGrid() {
                     intervalId = setInterval(swapGrid, (1 - (0.99 * speedSlider.value())) * 1000);
                 }
             }
-            if (save) saveCanvas('step_finished.png');
+            if (save) {
+                const fileName = `step_finished`;
+                const url = cnv.elt.toDataURL("image/png");
+                api.saveImage({ fileName, url });
+            }
         }, 1000);
     } else {
         step++;
         redraw();
         if (save) {
-            saveCanvas(`step_${step}.png`);
+            const fileName = `step_${step}`;
+            const url = cnv.elt.toDataURL("image/png");
+            api.saveImage({ fileName, url });
         }
     }
 }
@@ -329,8 +348,6 @@ class WFCBuilder {
                 lowestEntropy.name = this.getRandomNode(lowestEntropy.possibleTypes);
                 lowestEntropy.entropy = 0;
                 lowestEntropy.collapsed = true;
-                // collapsedNodes.push(this.getNodeLocation(lowestEntropy));
-                // this.collapseSurroundingNodes(lowestEntropy, collapsedNodes);
                 this.collapseSurroundingNodes(lowestEntropy);
                 lowestEntropy = this.getLowestEntropy();
                 yield;
@@ -374,7 +391,6 @@ class WFCBuilder {
                 }
             }
         }
-        // console.log(`minEntropy: ${minEntropy}`);
         if (minEntropy == 999) {
             return undefined;
         }
@@ -447,7 +463,6 @@ class WFCBuilder {
             }
             offsetNode.possibleTypes = compatibleTypes;
             offsetNode.entropy = offsetNode.possibleTypes.length;
-            // collapsed.push(offsetLocation);
         }
     }
 }

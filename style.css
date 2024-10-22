@@ -14,7 +14,7 @@ canvas {
   border-radius: 5px;
   line-height: 25px;
   overflow:hidden;
-  min-height: 75px;
+  min-height: 100px;
 }
 
 .button {
